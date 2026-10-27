@@ -1,7 +1,7 @@
 # Enterprise Network Simulation Lab (GNS3, $0, no vendor images)
 
 A complete two-site office network you can build for free in GNS3 using only open-source
-devices (FRRouting, Open vSwitch, VyOS, nginx, VPCS). Designed to run on a **16 GB laptop**
+devices (FRRouting, Open vSwitch, iptables, dnsmasq, nginx, VPCS). Designed to run on a **16 GB laptop**
 without heavy VMs, so it stays cool.
 
 **Objective:** design a full office network, secure it, then break it on purpose and troubleshoot.
@@ -10,7 +10,7 @@ without heavy VMs, so it stays cool.
 
 ```mermaid
 graph TD
-  NET((Internet / GNS3 NAT)) --- FW[VyOS FW<br/>NAT + firewall]
+  NET((Internet / GNS3 NAT)) --- FW[FW Docker node<br/>NAT + firewall]
   FW --- DMZ[DMZ Web<br/>172.16.50.10]
   FW --- HQR[HQ-R FRR<br/>router-on-a-stick, DHCP/DNS, OSPF]
   HQR --- SWH[OVS-HQ<br/>VLAN 10/20/30/40]
@@ -45,8 +45,8 @@ graph TD
 ## Repo layout
 
 ```
-docker/      Dockerfile + role scripts (hq.sh, branch.sh, web.sh)
-configs/     FRR, dnsmasq, OVS, VyOS, VPCS configs
+docker/      Dockerfile + role scripts (hq.sh, branch.sh, fw.sh, web.sh)
+configs/     FRR, dnsmasq, OVS, VPCS configs (+ optional VyOS config)
 docs/        Setup, IP plan, test plan, troubleshooting labs
 ```
 
@@ -65,7 +65,7 @@ stop the project when idle, and watch temperatures (HWMonitor / Core Temp).
 
 ## Status
 
-Configs are written for FRR 9.1, VyOS 1.4 and the GNS3 Open vSwitch appliance. If a command differs on
+Built and tested on GNS3 2.2.61 with the FRRouting (latest) image and the GNS3 Open vSwitch appliance. If a command differs on
 your version, open an issue or PR.
 
 ## License

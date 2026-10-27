@@ -12,8 +12,8 @@ Do the break step, observe the symptom, diagnose, fix, and write it up in your r
 | 5 | BR-R: remove `network 10.255.1.0/30 area 0` | Branch isolated from HQ | `show ip ospf interface`, `show ip route` | Add the network back |
 | 6 | HQ-R: delete the HR-to-Finance DROP rule | HR can reach Finance (security hole) | `iptables -L FORWARD -n -v` | Re-add rule |
 | 7 | HQ-R: put guest DROP above the web ACCEPT | Guest cannot reach DMZ web | Check rule order and hit counters | Reorder (ACCEPT first) |
-| 8 | VyOS: delete `nat source rule 100` | Internet fails, internal OK | `show nat source rules`, `ping 8.8.8.8` from FW vs from PC | Re-add NAT rule |
-| 9 | VyOS: delete route to 10.20.0.0/16 | Branch can reach internet one way only (no return) | `traceroute`, `show ip route` on FW | Re-add static route |
+| 8 | FW: `iptables -t nat -F` | Internet fails, internal OK | `iptables -t nat -L -n -v`, `ping 8.8.8.8` from FW vs from PC | Re-add the MASQUERADE rule |
+| 9 | FW: `ip route del 10.20.0.0/16` | Branch can reach internet one way only (no return) | `trace` from Branch PC, `ip route` on FW | `ip route add 10.20.0.0/16 via 10.255.0.1` |
 | 10 | Give two PCs the same static IP | Intermittent connectivity | `arp` output, duplicate MAC for one IP | Fix addressing, use DHCP |
 
 ## Useful commands
@@ -22,6 +22,6 @@ Do the break step, observe the symptom, diagnose, fix, and write it up in your r
 |---|---|
 | FRR routers | `vtysh -c "show ip route"`, `show ip ospf neighbor`, `iptables -L FORWARD -n -v`, `ip -br addr`, `tcpdump -i eth0 -n` |
 | OVS | `ovs-vsctl show`, `ovs-appctl fdb/show br0` |
-| VyOS | `show interfaces`, `show ip route`, `show nat source translations`, `show firewall` |
+| FW node | `ip -br addr`, `ip route`, `iptables -L FORWARD -n -v`, `iptables -t nat -L -n -v` |
 | VPCS | `show ip`, `ping`, `trace`, `arp` |
 | Any link | Right-click link in GNS3, Start capture (Wireshark) |
