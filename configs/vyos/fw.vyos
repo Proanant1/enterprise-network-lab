@@ -1,0 +1,37 @@
+# VyOS 1.4 (sagitta) - firewall / NAT / DMZ gateway
+# Enter with: configure   then paste, then: commit ; save
+set system host-name 'FW'
+set interfaces ethernet eth0 address '10.255.0.2/30'
+set interfaces ethernet eth0 description 'INSIDE-to-HQ-R'
+set interfaces ethernet eth1 address '172.16.50.1/24'
+set interfaces ethernet eth1 description 'DMZ'
+set interfaces ethernet eth2 address 'dhcp'
+set interfaces ethernet eth2 description 'OUTSIDE-NAT'
+
+# Return routes to internal networks
+set protocols static route 10.10.0.0/16 next-hop '10.255.0.1'
+set protocols static route 10.20.0.0/16 next-hop '10.255.0.1'
+
+# Source NAT to internet
+set nat source rule 100 outbound-interface name 'eth2'
+set nat source rule 100 source address '10.0.0.0/8'
+set nat source rule 100 translation address 'masquerade'
+
+# Forward policy: default drop
+set firewall ipv4 forward filter default-action 'drop'
+set firewall ipv4 forward filter rule 10 action 'accept'
+set firewall ipv4 forward filter rule 10 state established
+set firewall ipv4 forward filter rule 10 state related
+set firewall ipv4 forward filter rule 20 action 'accept'
+set firewall ipv4 forward filter rule 20 inbound-interface name 'eth0'
+set firewall ipv4 forward filter rule 20 outbound-interface name 'eth1'
+set firewall ipv4 forward filter rule 20 protocol 'tcp'
+set firewall ipv4 forward filter rule 20 destination port '80,443'
+set firewall ipv4 forward filter rule 25 action 'accept'
+set firewall ipv4 forward filter rule 25 inbound-interface name 'eth0'
+set firewall ipv4 forward filter rule 25 outbound-interface name 'eth1'
+set firewall ipv4 forward filter rule 25 protocol 'icmp'
+set firewall ipv4 forward filter rule 30 action 'accept'
+set firewall ipv4 forward filter rule 30 inbound-interface name 'eth0'
+set firewall ipv4 forward filter rule 30 outbound-interface name 'eth2'
+# DMZ -> inside and DMZ -> internet are blocked by default-action
