@@ -25,3 +25,7 @@ iptables -A FORWARD -i eth0 -o eth2 -j ACCEPT                                   
 
 # NAT internal networks out to the internet
 iptables -t nat -A POSTROUTING -o eth2 -s 10.0.0.0/8 -j MASQUERADE
+
+# Keep the container (and its GNS3 console) alive: the start command is the main process
+echo "[FW] startup complete"
+exec /bin/sh

@@ -20,3 +20,7 @@ cp /opt/lab/frr-branch/* /etc/frr/
 chown frr:frr /etc/frr/* 2>/dev/null
 /usr/lib/frr/frrinit.sh start
 dnsmasq -C /opt/lab/dnsmasq/branch.conf
+
+# Keep the container (and its GNS3 console) alive: the start command is the main process
+echo "[BRANCH] startup complete"
+exec /bin/sh

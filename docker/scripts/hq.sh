@@ -32,3 +32,7 @@ cp /opt/lab/frr-hq/* /etc/frr/
 chown frr:frr /etc/frr/* 2>/dev/null
 /usr/lib/frr/frrinit.sh start
 dnsmasq -C /opt/lab/dnsmasq/hq.conf
+
+# Keep the container (and its GNS3 console) alive: the start command is the main process
+echo "[HQ] startup complete"
+exec /bin/sh
